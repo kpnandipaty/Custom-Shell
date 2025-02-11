@@ -8,7 +8,7 @@ This is the starter repository for the _CSC1021 Operating Systems_ project entit
 
 You should follow the instructions below:
 
-1. fork (do not clone) this repository.  Once you have forked it, make your own repository private add both me (Graham Healy - @healygr) as "maintainer". You must do both of these steps before adding any deliverables.
+1. fork (do not clone) this repository.  Once you have forked it, make your own repository private add both me (Graham Healy - @healygr) as "maintainer". You must do both of these steps before adding any deliverables. Maintainer: Manage -> Members -> Invite members -> search for and select @healygr -> set Select Maximum role to maintainer -> click Invite; Private: Settings -> General -> Visibility, project features, permissions -> Project visibility = private.
 2. There are 3 folders (Stage1, Stage2, and Stage3), and within each of these a `src`, `manual`, `bin` directory.
 3. Add your files relating to the manual/help command to the `manual` directory.
 4. Your `makefile` should build the binary and place it in the `bin` directory.
