@@ -1,3 +1,12 @@
+/*
+name: Krishna Nandipaty
+
+studentnumber: 23437162
+
+I acknowledge the DCU Academic Integrity Policy
+
+*/
+
 
 #ifndef HEADER_H
 #define HEADER_H
