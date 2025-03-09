@@ -1,3 +1,0 @@
-dir
-help
-echo "hello"

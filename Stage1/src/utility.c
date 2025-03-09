@@ -1,3 +1,13 @@
+/*
+name: Krishna Nandipaty
+
+studentnumber: 23437162
+
+I acknowledge the DCU Academic Integrity Policy
+
+*/
+
+
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
