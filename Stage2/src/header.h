@@ -25,5 +25,6 @@ void echo_input(char **args);
 void enviornment();
 void get_help();
 void batchmode(const char *file);
+void inputoutput(char *args[]);
 
 #endif

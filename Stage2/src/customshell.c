@@ -131,9 +131,7 @@ int process_command(char *args[]) {
             return 0;
         }
 
-        
-        else{
-            
+                    
              //creates a child process
              pid_t pid = fork();
 
@@ -167,12 +165,10 @@ int process_command(char *args[]) {
                         //remove the symbol from the list of arguments
                         for(int k = i; args[k+2] != NULL; k++){
                             args[k] = args[k + 2];
-
-                           
                         }
 
                         args[i] = NULL;
-                        i--;
+                        continue;
                 }
 
                 // if the symbol ">" is present in the arguemnts
@@ -192,6 +188,10 @@ int process_command(char *args[]) {
                         exit(EXIT_FAILURE);
                     }
 
+                    else {
+                        fprintf(stderr, "stdout successfully redirected to %s\n", args[i + 1]);
+                    }
+
                     // removes it from the list of arguments
                     for(int k = i; args[k+2] != NULL; k++){
                         args[k] = args[k + 2];
@@ -200,7 +200,7 @@ int process_command(char *args[]) {
                     }
 
                     args[i] = NULL;
-                    i--;
+                    continue;
              }
 
              // if the symbol ">>" is present in the command line
@@ -228,17 +228,18 @@ int process_command(char *args[]) {
                 }
 
                 args[i] = NULL;
-                i--;
+                continue;
          }
-
 
         }
 
         // executes the commands after opening the file 
+
         if (execvp(args[0], args) == -1) {
             perror("execvp");
             _exit(EXIT_FAILURE);
         }
+        setenv("parent", "/customshell", 1);
     }
 
 
@@ -248,8 +249,6 @@ int process_command(char *args[]) {
         perror("error");
 
     }
-
-}
 
 }
 
@@ -285,5 +284,6 @@ void batchmode(const char *file) {
 
     fclose(batchfile);
 }
+
 
 
