@@ -29,20 +29,24 @@ void change_directory(char *directory){
         if(getcwd(cwd, sizeof(cwd))){
             printf("%s\n", cwd);
         }
-        
         else{
             perror("error");
         }
+        return;  // Add this return to prevent further execution when directory is NULL
     }
 
     // if the directory doesnt exist it prints error
     if(chdir(directory) != 0){
         perror("error");
     }
-
     // otherwise it changes the directory
     else{
-        setenv("PWD", cwd, 1);
+        if(getcwd(cwd, sizeof(cwd))){  // Get the updated current directory
+            setenv("PWD", cwd, 1);
+        }
+        else{
+            perror("error");
+        }
     }
 }
 

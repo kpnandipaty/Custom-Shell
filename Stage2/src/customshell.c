@@ -114,12 +114,15 @@ int process_command(char *args[])
             background = 1; 
         }
 
+
+
         // creates a child process
         pid_t pid = fork();
 
         // if making child process is successful
         if (pid == 0)
         {
+            // handles input output first
             // file pointers
             FILE *in_file = NULL;
             FILE *out_file = NULL;
@@ -216,6 +219,9 @@ int process_command(char *args[])
                 }
             }
 
+            // continue to internal commands
+
+            //clears the screen
             if (!strcmp(args[0], "clr"))
             {
                 clear_screen();
@@ -270,7 +276,7 @@ int process_command(char *args[])
                 exit(EXIT_SUCCESS);
             }
 
-            // executes the commands after opening the file
+            // executes the commands if its an external
             if (execvp(args[0], args) == -1)
             {
                 perror("execvp");
@@ -286,7 +292,7 @@ int process_command(char *args[])
         }
         else
         {
-            // Parent process
+            // if its not a background process
             if (!background)
             {
                 // waits for the non background process
