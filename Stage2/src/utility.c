@@ -101,3 +101,4 @@ void get_help(){
     // uses the more system function to access the readme which contains a smiple manual of the functions
     system("more ../manual/README.md");
 }
+

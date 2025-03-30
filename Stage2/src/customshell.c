@@ -15,6 +15,8 @@ I acknowledge the DCU Academic Integrity Policy
 #include <dirent.h>
 #include "header.h"
 #include <errno.h>
+#include <sys/wait.h>
+
 int main(int argc, char **argv)
 {
     char buf[MAX_BUFFER];
@@ -89,20 +91,35 @@ int tokeninput(char *buf, char *args[])
     return count;
 }
 
+
 // processes the commands of through input
 int process_command(char *args[])
 {
-
     if (args[0])
     {
-        // clear screen
+        // Check if this should be a background process
+        int background = 0;
+        int i = 0;
+        
+        // Find the last non-NULL argument
+        while (args[i] != NULL) {
+            i++;
+        }
+        
+        // Check if the last argument is "&"
+        if (i > 0 && strcmp(args[i-1], "&") == 0) {
+            // Remove the "&" symbol from arguments
+            args[i-1] = NULL;
+            // turns background into a 1 signifying it is a background process
+            background = 1; 
+        }
+
         // creates a child process
         pid_t pid = fork();
 
         // if making child process is successful
         if (pid == 0)
         {
-
             // file pointers
             FILE *in_file = NULL;
             FILE *out_file = NULL;
@@ -110,15 +127,12 @@ int process_command(char *args[])
             // loop through command line arguments
             for (int i = 0; args[i] != NULL; i++)
             {
-
                 // if there is a "<" symbol in the arguments
                 if (!strcmp(args[i], "<"))
                 {
-
                     // if there is no file following the < produce error message
                     if (args[i + 1] == NULL)
                     {
-
                         perror("error");
                         exit(EXIT_FAILURE);
                     }
@@ -144,11 +158,9 @@ int process_command(char *args[])
                 // if the symbol ">" is present in the arguemnts
                 else if (!strcmp(args[i], ">"))
                 {
-
                     // fail if there is not file present
                     if (args[i + 1] == NULL)
                     {
-
                         perror("error");
                         exit(EXIT_FAILURE);
                     }
@@ -160,7 +172,6 @@ int process_command(char *args[])
                         perror("error");
                         exit(EXIT_FAILURE);
                     }
-
                     else
                     {
                         fprintf(stderr, "stdout successfully redirected to %s\n", args[i + 1]);
@@ -179,11 +190,9 @@ int process_command(char *args[])
                 // if the symbol ">>" is present in the command line
                 else if (!strcmp(args[i], ">>"))
                 {
-
                     // produce error if no file is following
                     if (args[i + 1] == NULL)
                     {
-
                         perror("error");
                         exit(EXIT_FAILURE);
                     }
@@ -210,59 +219,58 @@ int process_command(char *args[])
             if (!strcmp(args[0], "clr"))
             {
                 clear_screen();
-                return 0;
+                exit(EXIT_SUCCESS);
             }
 
             // returns 1 which indicates to the main function that it should quit/ break out of the loop
             if (!strcmp(args[0], "quit"))
             {
-                return 1;
+                exit(EXIT_SUCCESS); // Child process exits
             }
 
             // changes directories
             if (!strcmp(args[0], "cd"))
             {
                 change_directory(args[1]);
-                return 0;
+                exit(EXIT_SUCCESS);
             }
 
             // lists the contents of a directory
             if (!strcmp(args[0], "dir"))
             {
                 list_directory(args[1]);
-                return 0;
+                exit(EXIT_SUCCESS);
             }
 
             // displays input from user
             if (!strcmp(args[0], "echo"))
             {
                 echo_input(args);
-                return 0;
+                exit(EXIT_SUCCESS);
             }
 
             // lists enviornment variables
             if (!strcmp(args[0], "environ"))
             {
                 enviornment();
-                return 0;
+                exit(EXIT_SUCCESS);
             }
 
             // prints out user manual from the readme
             if (!strcmp(args[0], "help"))
             {
                 get_help();
-                return 0;
+                exit(EXIT_SUCCESS);
             }
 
             // pauses the process until enter
             if (!strcmp(args[0], "pause"))
             {
                 // pause_shell();
-                return 0;
+                exit(EXIT_SUCCESS);
             }
 
             // executes the commands after opening the file
-
             if (execvp(args[0], args) == -1)
             {
                 perror("execvp");
@@ -271,11 +279,31 @@ int process_command(char *args[])
             setenv("parent", "/customshell", 1);
         }
 
-        // produces an error if forking fails
+        // produces an error if forking failed
         else if (pid < 0)
         {
-
             perror("error");
+        }
+        else
+        {
+            // Parent process
+            if (!background)
+            {
+                // waits for the non background process
+                int status;
+                waitpid(pid, &status, 0);
+                
+                // In case the child process runs the quit command
+                if (!strcmp(args[0], "quit"))
+                {
+                    return 1; // returns 1 to main
+                }
+            }
+            else
+            {
+                // prints pid for the background process
+                printf("%d\n", pid);
+            }
         }
     }
 
@@ -314,3 +342,4 @@ void batchmode(const char *file)
 
     fclose(batchfile);
 }
+
